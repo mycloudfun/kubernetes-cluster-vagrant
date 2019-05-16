@@ -6,3 +6,12 @@
 
   roles:
     - k8s-setup-master
+
+- name: "Setup the kubernetes controller instances"
+  hosts: controllers
+  gather_facts: yes
+  become: yes
+  serial: 1
+
+  roles:
+    - k8s-setup-controllers

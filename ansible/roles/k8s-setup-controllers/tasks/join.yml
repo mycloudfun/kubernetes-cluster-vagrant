@@ -1,0 +1,143 @@
+- name: Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  register: reset_cluster
+
+- name: "Create kubernetes certificates folders"
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+  with_items:
+    - "/etc/kubernetes/pki"
+    - "/etc/kubernetes/pki/etcd"
+
+- name: "Fetch ca.crt file from master"
+  fetch:
+    src: /etc/kubernetes/pki/ca.crt
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy ca.crt file to controllers"
+  copy:
+    src: buffer/ca.crt
+    dest: /etc/kubernetes/pki/ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Fetch ca.key file from master"
+  fetch:
+    src: /etc/kubernetes/pki/ca.key
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy ca.key file to controllers"
+  copy:
+    src: buffer/ca.key
+    dest: /etc/kubernetes/pki/ca.key
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Fetch sa.key file from master"
+  fetch:
+    src: /etc/kubernetes/pki/sa.key
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy sa.key file to controllers"
+  copy:
+    src: buffer/sa.key
+    dest: /etc/kubernetes/pki/sa.key
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Fetch sa.pub file from master"
+  fetch:
+    src: /etc/kubernetes/pki/sa.pub
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy sa.pub file to controllers"
+  copy:
+    src: buffer/sa.pub
+    dest: /etc/kubernetes/pki/sa.pub
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Fetch front-proxy-ca.crt file from master"
+  fetch:
+    src: /etc/kubernetes/pki/front-proxy-ca.crt
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy front-proxy-ca.crt file to controllers"
+  copy:
+    src: buffer/front-proxy-ca.crt
+    dest: /etc/kubernetes/pki/front-proxy-ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Fetch front-proxy-ca.key file from master"
+  fetch:
+    src: /etc/kubernetes/pki/front-proxy-ca.key
+    dest: buffer/
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy front-proxy-ca.key file to controllers"
+  copy:
+    src: buffer/front-proxy-ca.key
+    dest: /etc/kubernetes/pki/front-proxy-ca.key
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Fetch etcd-ca.crt file from master"
+  fetch:
+    src: /etc/kubernetes/pki/etcd/ca.crt
+    dest: buffer/etcd-ca.crt
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy etcd-ca.crt file to controllers"
+  copy:
+    src: buffer/etcd-ca.crt
+    dest: /etc/kubernetes/pki/etcd/ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Fetch etcd-ca.key file from master"
+  fetch:
+    src: /etc/kubernetes/pki/etcd/ca.key
+    dest: buffer/etcd-ca.key
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy etcd-ca.key file to controllers"
+  copy:
+    src: buffer/etcd-ca.key
+    dest: /etc/kubernetes/pki/etcd/ca.key
+    owner: root
+    group: root
+    mode: 0600
+
+
+- name: Join to Kubernetes cluster
+  when: reset_cluster is succeeded
+  shell: |
+    kubeadm join --token {{ token }} \
+                --discovery-token-unsafe-skip-ca-verification \
+                --experimental-control-plane \
+                {{ kubernetes_master_ip }}:6443
+  register: join_cluster

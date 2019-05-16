@@ -20,6 +20,7 @@
   when: reset_cluster is succeeded
   shell: |
     kubeadm init --config={{ kubeadm_config_dir }}/kubeadm-config.yaml \
+    --experimental-upload-certs
   register: init_cluster
 
 - name: "Create Kubernetes config directory"
@@ -36,6 +37,12 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0755
     remote_src: true
+
+- name: "Deploy Canico network plugin"
+  when: init_cluster is succeeded
+  shell: |
+    kubectl --kubeconfig={{ kubeadmin_config }} apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+    kubectl --kubeconfig={{ kubeadmin_config }} apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
 
 - name: "Deploy kubernetes dashboard into cluster"
   when: init_cluster is succeeded and enable_dashboard
