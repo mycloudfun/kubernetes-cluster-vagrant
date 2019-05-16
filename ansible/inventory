@@ -1,0 +1,15 @@
+[master]
+master1.k8s.local
+
+[masters]
+master1.k8s.local
+master2.k8s.local
+master3.k8s.local
+
+[workers]
+worker1.k8s.local
+worker2.k8s.local
+worker3.k8s.local
+
+[lb]
+api.k8s.local

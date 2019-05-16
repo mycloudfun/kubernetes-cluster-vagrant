@@ -1,0 +1,4 @@
+.vagrant
+*.retry
+key
+key.pub

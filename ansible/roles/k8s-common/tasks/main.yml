@@ -1,0 +1,72 @@
+- name: Disable swapoff
+  shell: swapoff -a
+
+- name: Disable swapoff permanently
+  replace:
+    path: /etc/fstab
+    regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#\1\2\3swap\4'
+    backup: yes
+
+- name: "Enable Bridge-netfilter kernel module"
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: "Enable Bridge-netfilter to allow cni communication"
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    state: present
+    value: 1
+
+- name: "Check if Docker is installed"
+  stat:
+    path: /usr/lib/systemd/system/docker.service
+  register: docker
+
+- name: "Install Docker"
+  when: not docker.stat.exists
+  block:
+    - name: "Download installation script"
+      get_url:
+        url: https://get.docker.com
+        dest: /usr/local/lib/get-docker.sh
+        mode: 0755
+
+    - name: "Install Docker from the script"
+      shell: "/bin/sh /usr/local/lib/get-docker.sh"
+
+    - name: "Start the docker service"
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: "Disable SELinux"
+  selinux:
+    state: disabled
+  register: selinux
+  when: not selinux_enabled
+
+- name: "Restart the server"
+  reboot:
+  when: selinux.changed
+ 
+- name: "Configure kubernetes repository"
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/
+    owner: root
+    group: root
+
+- name: "Install required packages"
+  yum:
+    name: ['kubelet','kubeadm','kubectl']
+    state: latest
+    update_cache: yes
+
+- name: "Start and enable kubelet service"
+  service:
+    name: kubelet
+    state: started
+    enabled: yes

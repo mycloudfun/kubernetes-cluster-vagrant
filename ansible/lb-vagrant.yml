@@ -1,0 +1,9 @@
+---
+- name: "Bootstraping the loadbalancer node for the kubernetes cluster"
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - common
+    - lb

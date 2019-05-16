@@ -1,0 +1,8 @@
+---
+- name: "Setup the kubernetes master instance"
+  hosts: master
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - k8s-setup-master

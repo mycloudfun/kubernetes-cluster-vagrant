@@ -1,0 +1,18 @@
+kubernetes_version: v1.14.0
+kubernetes_api: api.k8s.local
+
+#kubeadm condifgs
+kubeadm_config_dir: "/var/lib/kubeadm"
+
+token: "b0f7b8.8d1767876297d85c"
+
+service_cidr: "10.96.0.0/12"
+pod_network_cidr: "10.200.0.0/16"
+
+systemd_dir: /lib/systemd/system
+system_env_dir: /etc/sysconfig
+network_dir: /etc/kubernetes/network
+kubeadmin_config: /etc/kubernetes/admin.conf
+kube_addon_dir: /etc/kubernetes/addon
+
+enable_dashboard: true

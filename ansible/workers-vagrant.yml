@@ -1,0 +1,9 @@
+---
+- name: "Bootstraping the worker's nodes of the kubernetes cluster"
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  roles:
+    - common
+    - k8s-common
