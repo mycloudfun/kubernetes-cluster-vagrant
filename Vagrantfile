@@ -37,6 +37,7 @@ Vagrant.configure(2) do |config|
         v.name = "#{name}"
         v.memory = mastersMemory
         v.cpus = mastersCpu
+        v.customize ["modifyvm", :id, "--macaddress1", "auto"]
       end
       nodes.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/masters-vagrant.yml"
@@ -52,6 +53,7 @@ Vagrant.configure(2) do |config|
        v.name = "#{name}"
        v.memory = workersMemory
        v.cpus = workersCpu
+       v.customize ["modifyvm", :id, "--macaddress1", "auto"]
      end
      nodes.vm.provision "ansible" do |ansible|
        ansible.playbook = "ansible/workers-vagrant.yml"
@@ -68,6 +70,7 @@ Vagrant.configure(2) do |config|
         v.name = "#{name}"
         v.memory = lbMemory
         v.cpus = lbCpu
+        v.customize ["modifyvm", :id, "--macaddress1", "auto"]
       end
       lb.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/lb-vagrant.yml"

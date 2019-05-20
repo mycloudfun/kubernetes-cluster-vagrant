@@ -1,0 +1,113 @@
+- name: "Force the deletion of any legacy configuration if exist"
+  shell: "kubeadm reset --force"
+
+- name: "Configure subdirectory for kubelet service to manage etcd"
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    owner: root
+    group: root
+    state: directory
+
+- name: "Copy configuration file for etcd systemd"
+  copy:
+    src: 20-etcd-service-manager.conf
+    dest: /etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
+    owner: root
+    group: root
+
+- name: "Restart kubelet"
+  service:
+    name: kubelet
+    state: restarted
+    daemon_reload: yes
+
+- name: "Generate etcd-ca"
+  shell: "kubeadm init phase certs etcd-ca"
+  delegate_to: master1.k8s.local
+
+- name: "Created etcd pki directory"
+  file:
+    path: /etc/kubernetes/pki/etcd
+    owner: root
+    group: root
+    state: directory
+
+- name: "Fetch etcd-ca.crt file from master"
+  fetch:
+    src: /etc/kubernetes/pki/etcd/ca.crt
+    dest: buffer/etcd-ca.crt
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy etcd-ca.crt file to controllers"
+  copy:
+    src: buffer/etcd-ca.crt
+    dest: /etc/kubernetes/pki/etcd/ca.crt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Fetch etcd-ca.key file from master"
+  fetch:
+    src: /etc/kubernetes/pki/etcd/ca.key
+    dest: buffer/etcd-ca.key
+    flat: yes
+  delegate_to: master1.k8s.local
+
+- name: "Copy etcd-ca.key file to controllers"
+  copy:
+    src: buffer/etcd-ca.key
+    dest: /etc/kubernetes/pki/etcd/ca.key
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Create kubeadmcfg.yaml for etcd"
+  template:
+    src: kubeadmcfg.yaml.j2
+    dest: /etc/kubernetes/kubeadmcfg.yaml
+    owner: root
+    group: root
+
+- name: "Create etcd-server certificate for each member"
+  shell: "kubeadm init phase certs etcd-server --config=/etc/kubernetes/kubeadmcfg.yaml"
+
+- name: "Create etcd-peer certificate for each member"
+  shell: "kubeadm init phase certs etcd-peer --config=/etc/kubernetes/kubeadmcfg.yaml"
+
+- name: "Create etcd-healthcheck-client certificate for each member"
+  shell: "kubeadm init phase certs etcd-healthcheck-client --config=/etc/kubernetes/kubeadmcfg.yaml"
+
+- name: "Create apiserver-etcd-client certificate for each member"
+  shell: "kubeadm init phase certs apiserver-etcd-client --config=/etc/kubernetes/kubeadmcfg.yaml"
+
+- name: "Create the static pod manifest"
+  shell: "kubeadm init phase etcd local --config=/etc/kubernetes/kubeadmcfg.yaml"
+
+- name: "Pause 1 minute to complete cluster configuration"
+  pause:
+    minutes: 1
+
+- name: "Check the etcd cluster status"
+  run_once: true
+  delegate_to: master1.k8s.local
+  block:
+
+  - name: "Get the version of etcd image"
+    shell: "docker image ls |grep quay.io/coreos/etcd | awk '{print $2}'"
+    register: etcd_version
+
+  - name: "Check the etcd cluster status"
+    shell: |
+      docker run --rm -it \
+      --net host \
+      -v /etc/kubernetes:/etc/kubernetes quay.io/coreos/etcd:{{ etcd_version.stdout }} etcdctl \
+      --cert-file /etc/kubernetes/pki/etcd/peer.crt \
+      --key-file /etc/kubernetes/pki/etcd/peer.key \
+      --ca-file /etc/kubernetes/pki/etcd/ca.crt \
+      --endpoints https://{{ ansible_eth1.ipv4.address }}:2379 cluster-health
+    register: etcd_status
+
+  - name: "etcd cluster status"
+    debug:
+      msg: "{{ etcd_status.stdout }}"

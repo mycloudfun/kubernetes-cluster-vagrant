@@ -1,0 +1,16 @@
+apiVersion: "kubeadm.k8s.io/v1beta1"
+kind: ClusterConfiguration
+etcd:
+    local:
+        serverCertSANs:
+        - "{{ ansible_eth1.ipv4.address }}"
+        peerCertSANs:
+        - "{{ ansible_eth1.ipv4.address }}"
+        extraArgs:
+            initial-cluster: {{ master1_hostname }}=https://{{ master1 }}:2380,{{ master2_hostname }}=https://{{ master2 }}:2380,{{ master3_hostname }}=https://{{ master3 }}:2380
+            initial-cluster-state: new
+            name: {{ ansible_hostname }}
+            listen-peer-urls: https://{{ ansible_eth1.ipv4.address }}:2380
+            listen-client-urls: https://{{ ansible_eth1.ipv4.address }}:2379
+            advertise-client-urls: https://{{ ansible_eth1.ipv4.address }}:2379
+            initial-advertise-peer-urls: https://{{ ansible_eth1.ipv4.address }}:2380

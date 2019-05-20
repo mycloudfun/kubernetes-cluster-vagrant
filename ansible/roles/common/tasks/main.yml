@@ -15,3 +15,19 @@
     user: vagrant
     state: present
     key: "{{ lookup('file', '../key.pub') }}"
+
+- name: "Update all the packages"
+  yum:
+    name: "*"
+    state: latest
+
+- name: check if reboot is required
+  shell: needs-restarting -r
+  failed_when: false
+  register: reboot_required
+  changed_when: false
+
+- when: reboot_required.rc != 0
+  block:
+    - name: reboot the server
+      reboot:

@@ -1,6 +1,17 @@
+## etcd variables
+master1: 10.0.0.21
+master2: 10.0.0.22
+master3: 10.0.0.23
+
+master1_hostname: master1
+master2_hostname: master2
+master3_hostname: master3
+
 kubernetes_version: v1.14.0
 kubernetes_api: api.k8s.local
-kubernetes_master_ip: "10.0.0.21"
+kubernetes_api_ip: "10.0.0.10"
+#kubernetes_master_ip: "10.0.0.21"
+
 #kubeadm condifgs
 kubeadm_config_dir: "/var/lib/kubeadm"
 

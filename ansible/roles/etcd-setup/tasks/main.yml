@@ -1,0 +1,11 @@
+- name: "Check if etcd configuration exist"
+  stat:
+    path: /etc/kubernetes/pki/etcd/ca.crt
+  register: etcd
+  run_once: yes
+  delegate_to: master1.k8s.local
+
+- name: "Configure etcd cluster"
+#  when: not etcd.stat.exists
+  include_tasks: init.yml
+
