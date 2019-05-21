@@ -19,7 +19,15 @@ The cluster spin up 3 Master's nodes, 3 Worker's nodes and one load balancer. By
 
 ### Step 1
 
-The first step is to configure entries in your local machine. Base setup is made of 3 masters and 3 workes nodes and 1 load balancer. You need the following entries in your **/etc/hosts**
+The first step is to configure ssh keys, which we use later to configure the cluster via Ansible. Run below script to produce them:
+
+```bash
+./sshKeys.sh
+```
+
+### Step 2
+
+The next step is to configure entries in your local machine. Base setup is made of 3 masters and 3 workes nodes and 1 load balancer. You need the following entries in your **/etc/hosts**
 
 ```bash
 192.168.1.100 api api.k8s.local
@@ -37,7 +45,7 @@ Run below script to configure it:
 $ sudo ./hostsSetup.sh
 ```
 
-### Step 2
+### Step 3
 
 Next step is to create the infrastructure and base servers setup. Thanks to Vagrant, you can do it in one simple command:
 
@@ -47,15 +55,15 @@ $ vagrant up
 
 After a couple of minutes (depending on your internet speed), the infrastructure part will be ready.
 
-### Step 3
+### Step 4
 
-Finally run the below script, which invoeks the Ansible to configure the whole setup:
+Finally, run the below script which invokes the Ansible to configure the whole cluster components:
 
 ```bash
 $ ./setup.sh
 ```
 
-Your cluster will be ready in a couple of minutes. The installations script will copy the necessary **kubeconfig**, which you can use to validate the status of your cluster from your local computer:
+Your cluster will be ready in a couple of minutes. The installations script will copy the necessary **kubeconfig**, which you can use later to validate the status of your cluster from your local computer:
 
 ```bash
 $ kubectl --kubeconfig ansible/buffer/admin.conf get nodes
