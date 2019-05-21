@@ -30,13 +30,13 @@ The first step is to configure ssh keys, which we use later to configure the clu
 The next step is to configure entries in your local machine. Base setup is made of 3 masters and 3 workes nodes and 1 load balancer. You need the following entries in your **/etc/hosts**
 
 ```bash
-192.168.1.100 api api.k8s.local
-192.168.1.101 master1 master1.k8s.local
-192.168.1.102 master2 master2.k8s.local
-192.168.1.103 master3 master3.k8s.local
-192.168.1.121 worker1 worker1.k8s.local
-192.168.1.122 worker2 worker2.k8s.local
-192.168.1.123 worker3 worker3.k8s.local
+10.0.0.10 api api.k8s.local api
+10.0.0.21 master1 master1.k8s.local
+10.0.0.22 master2 master2.k8s.local
+10.0.0.23 master3 master3.k8s.local
+10.0.0.31 worker1 worker1.k8s.local
+10.0.0.32 worker2 worker2.k8s.local
+10.0.0.33 worker3 worker3.k8s.local
 ```
 
 Run below script to configure it:
