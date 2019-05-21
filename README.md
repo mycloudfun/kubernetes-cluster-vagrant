@@ -78,5 +78,5 @@ worker3.k8s.local   Ready    <none>   41s   v1.14.2
 
 ## Customization
 
-* 1. In case you need more hardware resources, edit the Vagrantfile and adjust the configuration settings. 
-* 2. In case you need a different version of the Kubernetes, adjust the value of **kubernetes_version** variable in ansible inventory.
+1. In case you need more hardware resources, edit the Vagrantfile and adjust the configuration settings. 
+2. In case you need a different version of the Kubernetes, adjust the value of **kubernetes_version** variable in ansible inventory.
