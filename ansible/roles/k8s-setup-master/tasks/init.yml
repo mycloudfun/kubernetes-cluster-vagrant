@@ -1,4 +1,4 @@
-- name: "Reset Kubernetes component"
+- name: "Reset the kubeadm components"
   shell: "kubeadm reset --force"
   register: reset_cluster
 
@@ -20,7 +20,8 @@
   when: reset_cluster is succeeded
   shell: |
     kubeadm init --config={{ kubeadm_config_dir }}/kubeadm-config.yaml \
-    --experimental-upload-certs
+    --experimental-upload-certs \
+    --certificate-key {{ certificate_key }} 
   register: init_cluster
 
 - name: "Create Kubernetes config directory"
@@ -37,6 +38,12 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0755
     remote_src: true
+
+- name: "Fetch admin.conf to local system"
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: buffer/admin.conf
+    flat: yes
 
 - name: "Deploy Canico network plugin"
   when: init_cluster is succeeded
@@ -55,7 +62,7 @@
   delay: 2
   ignore_errors: true
 
-- name: "Pause the installation before go to controllers configuration"
+- name: "Pause the installation before proceed with the other controllers configuration"
   pause:
-    minutes: 3
+    minutes: 1
   when: init_cluster is succeeded

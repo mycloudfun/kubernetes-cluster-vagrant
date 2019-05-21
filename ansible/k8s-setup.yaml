@@ -1,26 +1,29 @@
 ---
-- name: "Setup etcd cluster"
-  hosts: masters
-  gather_facts: yes
-  become: yes
-
-  roles:
-    - etcd-setup
-
-
 - name: "Setup the kubernetes master instance"
   hosts: master
   gather_facts: yes
   become: yes
-
+  tags:
+  - k8s-master
   roles:
-#    - k8s-setup-master
+  - k8s-setup-master
 
 - name: "Setup the kubernetes controller instances"
   hosts: controllers
   gather_facts: yes
   become: yes
   serial: 1
-
+  tags:
+  - k8s-controllers
   roles:
-#    - k8s-setup-controllers
+  - k8s-setup-controllers
+
+- name: "Setup the kubernetes worker instances"
+  hosts: workers
+  gather_facts: yes
+  become: yes
+  serial: 1
+  tags:
+  - k8s-workers
+  roles:
+  - k8s-setup-workers

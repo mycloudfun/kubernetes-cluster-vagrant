@@ -27,7 +27,6 @@ lbCpu = "2"
 Vagrant.configure(2) do |config|
 
   config.vm.box = "centos/7"
-#  total_hosts = masters.length
 
   masters.each_with_index do |(name, ip), index|
     config.vm.define name do |nodes|
@@ -38,6 +37,11 @@ Vagrant.configure(2) do |config|
         v.memory = mastersMemory
         v.cpus = mastersCpu
         v.customize ["modifyvm", :id, "--macaddress1", "auto"]
+        #Network speedup
+        v.customize ["modifyvm", :id, "--nictype1", "virtio" ]
+        v.customize ["modifyvm", :id, "--nictype2", "virtio" ]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
       end
       nodes.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/masters-vagrant.yml"
@@ -54,6 +58,11 @@ Vagrant.configure(2) do |config|
        v.memory = workersMemory
        v.cpus = workersCpu
        v.customize ["modifyvm", :id, "--macaddress1", "auto"]
+       #Network speedup
+       v.customize ["modifyvm", :id, "--nictype1", "virtio" ]
+       v.customize ["modifyvm", :id, "--nictype2", "virtio" ]
+       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+       v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
      end
      nodes.vm.provision "ansible" do |ansible|
        ansible.playbook = "ansible/workers-vagrant.yml"
@@ -71,6 +80,11 @@ Vagrant.configure(2) do |config|
         v.memory = lbMemory
         v.cpus = lbCpu
         v.customize ["modifyvm", :id, "--macaddress1", "auto"]
+        #Network speedup
+        v.customize ["modifyvm", :id, "--nictype1", "virtio" ]
+        v.customize ["modifyvm", :id, "--nictype2", "virtio" ]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
       end
       lb.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/lb-vagrant.yml"

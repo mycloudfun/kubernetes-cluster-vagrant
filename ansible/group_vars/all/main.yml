@@ -7,23 +7,18 @@ master1_hostname: master1
 master2_hostname: master2
 master3_hostname: master3
 
+etcd_install_timeout: 1
+
 kubernetes_version: v1.14.0
 kubernetes_api: api.k8s.local
 kubernetes_api_ip: "10.0.0.10"
-#kubernetes_master_ip: "10.0.0.21"
 
-#kubeadm condifgs
 kubeadm_config_dir: "/var/lib/kubeadm"
+kubeadmin_config: "/etc/kubernetes/admin.conf"
 
 token: "b0f7b8.8d1767876297d85c"
-
+certificate_key: "15dd52df4c5f901c5cf089b5aa4f8c90f38d28085bcb090d9314563793ee405e"
 service_cidr: "10.96.0.0/12"
 pod_network_cidr: "10.200.0.0/16"
-
-systemd_dir: /lib/systemd/system
-system_env_dir: /etc/sysconfig
-network_dir: /etc/kubernetes/network
-kubeadmin_config: /etc/kubernetes/admin.conf
-kube_addon_dir: /etc/kubernetes/addon
 
 enable_dashboard: true
