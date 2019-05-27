@@ -42,8 +42,8 @@
 - name: "Fetch admin.conf to local system"
   fetch:
     src: /etc/kubernetes/admin.conf
-    dest: buffer/admin.conf
-    flat: yes
+    dest: buffer/
+    flat: true
 
 - name: "Deploy Canico network plugin"
   when: init_cluster is succeeded
