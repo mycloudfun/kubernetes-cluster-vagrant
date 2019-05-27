@@ -15,9 +15,12 @@
 
 - name: "Enable Bridge-netfilter to allow cni communication"
   sysctl:
-    name: net.bridge.bridge-nf-call-iptables
+    name: "{{ item }}"
     state: present
     value: 1
+  with_items:
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
 
 - name: "Install base packages"
   yum:

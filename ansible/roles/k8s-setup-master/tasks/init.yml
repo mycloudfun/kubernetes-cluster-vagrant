@@ -42,7 +42,7 @@
 - name: "Fetch admin.conf to local system"
   fetch:
     src: /etc/kubernetes/admin.conf
-    dest: buffer/
+    dest: buffer/admin.conf
     flat: true
 
 - name: "Deploy Canico network plugin"
@@ -50,6 +50,17 @@
   shell: |
     kubectl --kubeconfig={{ kubeadmin_config }} apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
     kubectl --kubeconfig={{ kubeadmin_config }} apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+
+- name: "Get the patch to Calico plugin to use new POD CIDR: {{ pod_network_cidr }}"
+  template:
+    src: calico-patch.yaml.j2
+    dest: /tmp/calico-patch.yaml
+    owner: root
+    group: root
+
+- name: "Patch Calico plugin"
+  shell: |
+    kubectl --kubeconfig={{ kubeadmin_config }} patch ds calico-node -n kube-system --patch "$(cat /tmp/calico-patch.yaml)"
 
 - name: "Deploy kubernetes dashboard into cluster"
   when: init_cluster is succeeded and enable_dashboard

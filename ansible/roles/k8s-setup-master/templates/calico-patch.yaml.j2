@@ -1,0 +1,8 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: calico-node
+          env:
+            - name: CALICO_IPV4POOL_CIDR
+              value: "{{ pod_network_cidr }}"
