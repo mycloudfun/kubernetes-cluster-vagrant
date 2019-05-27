@@ -15,6 +15,7 @@ controlPlaneEndpoint: "{{ kubernetes_api }}:6443"
 networking:
   podSubnet: {{ pod_network_cidr }}
   serviceSubnet: {{ service_cidr }}
+  dnsDomain: {{ kubernetes_dns }}
 apiServer:
   certSANs:
   - {{ kubernetes_api }}
