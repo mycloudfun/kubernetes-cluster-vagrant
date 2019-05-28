@@ -12,7 +12,6 @@ etcd_install_timeout: 1
 kubernetes_version: v1.14.0
 kubernetes_api: api.k8s.local
 kubernetes_api_ip: "10.0.0.10"
-kubernetes_dns: k8s.local
 
 kubeadm_config_dir: "/var/lib/kubeadm"
 kubeadmin_config: "/etc/kubernetes/admin.conf"
@@ -22,4 +21,3 @@ certificate_key: "15dd52df4c5f901c5cf089b5aa4f8c90f38d28085bcb090d9314563793ee40
 service_cidr: "10.96.0.0/12"
 pod_network_cidr: "10.200.0.0/16"
 
-enable_dashboard: true

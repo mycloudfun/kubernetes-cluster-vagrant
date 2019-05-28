@@ -62,17 +62,6 @@
   shell: |
     kubectl --kubeconfig={{ kubeadmin_config }} patch ds calico-node -n kube-system --patch "$(cat /tmp/calico-patch.yaml)"
 
-- name: "Deploy kubernetes dashboard into cluster"
-  when: init_cluster is succeeded and enable_dashboard
-  command: |
-    kubectl --kubeconfig={{ kubeadmin_config }} \
-        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml 
-  register: create_result
-  until: create_result.rc == 0
-  retries: 5
-  delay: 2
-  ignore_errors: true
-
 - name: "Pause the installation before proceed with the other controllers configuration"
   pause:
     minutes: 1

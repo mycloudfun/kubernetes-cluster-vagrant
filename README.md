@@ -80,3 +80,27 @@ worker3.k8s.local   Ready    <none>   41s   v1.14.2
 
 1. In case you need more hardware resources, edit the Vagrantfile and adjust the configuration settings. 
 2. In case you need a different version of the Kubernetes, adjust the value of **kubernetes_version** variable in ansible inventory.
+
+## Installing the Add-ons
+
+If you need some of the most important addons, Use below scripts to install them:
+
+1. Nginx-Ingress Controller
+
+```bash
+./ingressSetup.sh
+```
+
+2. Metallb 
+
+```bash
+./metallbSetup.sh
+```
+
+3. Dashboard (Make sure you have installed Metallb first)
+
+```bash
+./dashboardSetup.sh
+
+It will generate the IP as well as the token used to authenticate
+```
